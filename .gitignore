@@ -1,0 +1,5 @@
+structpy.egg-info
+build
+dist
+*.pyc
+lastfailed
