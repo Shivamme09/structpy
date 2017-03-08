@@ -74,49 +74,69 @@ class bstree:
 		return None
 
 		
-	def delete(self, item):
+	def remove(self, item):
 		"""
 		Removes and returns the item from the tree.
 		"""
 		self._item = item
 		currentNode = self._root
 
-		if self._item == currentNode.data:
-			return 
+		def delete_none_child(node):
+			"""
+			Delete the node with no childeren
+			"""
+			if node==node.parent.leftChild:
+				node.parent.leftChild = None
+			else:
+				node.parent.rightChild = None
+
+		def delete_single_child(node):
+			"""
+			Delete the node with only one child
+			"""
+			if node.leftChild:
+				if node.parent.leftChild==node:
+					node.parent.leftChild = node.leftChild
+				else:
+					node.parent.rightChild = node.leftChild
+			else:
+				if node.parent.leftChild==node:
+					node.parent.leftChild = node.rightChild
+				else:
+					node.parent.rightChild = node.rightChild
+
+		def delete_both_child(node):
+			"""
+			Delete the node with both the child
+			"""
+			cr_node = node
+			while cr_node.leftChild is not None:
+				cr_node = cr_node.leftChild
+			if node.parent.leftChild==node:
+				node.parent.leftChild.data = cr_node.data
+			else:
+				node.parent.rightChild.data = cr_node.data
+
+			if cr_node.leftChild is None and cr_node.rightChild is None:
+				delete_none_child(cr_node)
+			else:
+				delete_single_child(cr_node)
 
 		while currentNode is not None:
-			if self._item == currentNode.data:
-				
-				if currentNode.leftChild is not None and currentNode.rightChild is None:
-					if currentNode is currentNode.parent.leftChild:
-						currentNode.parent.leftChild = currentNode.leftChild
-						currentNode.leftChild.parent = currentNode.parent
-					else:
-						currentNode.parent.rightChild = currentNode.leftChild
-						currentNode.leftChild.parent = currentNode.parent
-
-				elif currentNode.leftChild is None and currentNode.rightChild is not None:
-					if currentNode is currentNode.parent.leftChild:
-						currentNode.parent.leftChild = currentNode.rightChild
-						currentNode.rightChild.parent = currentNode.parent
-					else:
-						currentNode.parent.rightChild = currentNode.rightChild
-						currentNode.rightChild.parent = currentNode.parent
-
-				elif currentNode.leftChild is None and currentNode.rightChild is None:
-					if currentNode is currentNode.leftChild:
-						currentNode.parent.leftChild = None
-					else:
-						currentNode.parent.rightChild = None
-
-				return
-	
-					
-			elif self._item > currentNode.data:
-				currentNode = currentNode.rightChild
-			else:
+			if currentNode.data==self._item:
+				if currentNode.leftChild is None and currentNode.rightChild is None:
+					delete_none_child(currentNode)
+					return
+				elif currentNode.leftChild is not None and currentNode.rightChild is not None:
+					delete_both_child(currentNode)
+					return
+				else:
+					delete_single_child(currentNode)
+					return
+			elif currentNode.data>self._item:
 				currentNode = currentNode.leftChild
-		return
+			else:
+				currentNode = currentNode.rightChild
 
 
 	def find(self, key):
